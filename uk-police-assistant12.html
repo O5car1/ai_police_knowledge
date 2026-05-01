@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlueLine — UK Police Knowledge Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #06111f;
+    --navy2: #091827;
+    --panel: #0b1e30;
+    --panel2: #0d2236;
+    --border: #1a3a56;
+    --border2: #0f2840;
+    --blue: #1e6fd9;
+    --blue2: #2980f5;
+    --glow: #1e6fd980;
+    --text: #ddeaf8;
+    --muted: #7aa8cc;
+    --dim: #2e5a7a;
+    --gold: #f0b429;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --white: #e8f2ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(30,111,217,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,111,217,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, #06111ffa 80%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 64px;
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .badge {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #1e6fd9, #0d3d7a);
+    border: 1px solid #2a5faf;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 20px #1e6fd940;
+  }
+
+  .logo-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--white);
+    letter-spacing: 0.08em;
+  }
+
+  .logo-text span { color: var(--blue2); }
+
+  nav {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+  }
+
+  .status-dot {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--green);
+    letter-spacing: 0.1em;
+  }
+  .status-dot::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 60px 32px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--blue2);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.1s forwards;
+  }
+
+  .hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    line-height: 1.0;
+    color: var(--white);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--blue2);
+    text-shadow: 0 0 40px #2980f560;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 28px;
+    line-height: 1.7;
+    font-weight: 400;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.3s forwards;
+  }
+
+  .disclaimer-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f0b42912;
+    border: 1px solid #f0b42940;
+    color: #f0b429cc;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    padding: 6px 14px;
+    border-radius: 3px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.4s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── COVERAGE CHIPS ── */
+  .coverage {
+    position: relative; z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.5s forwards;
+  }
+
+  .chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.63rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    background: var(--panel2);
+    border: 1px solid var(--border2);
+    padding: 5px 11px;
+    border-radius: 3px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .chip:hover {
+    border-color: var(--blue);
+    color: var(--blue2);
+    background: #1e6fd910;
+  }
+
+  /* ── MAIN CHAT LAYOUT ── */
+  .main {
+    position: relative; z-index: 1;
+    flex: 1;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 32px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── SUGGESTIONS ── */
+  .suggestions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .suggest-btn {
+    background: var(--panel);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 14px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    text-align: left;
+    transition: all 0.18s;
+    line-height: 1.4;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .suggest-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--blue);
+    opacity: 0;
+    transition: opacity 0.18s;
+  }
+
+  .suggest-btn:hover {
+    border-color: var(--blue);
+    background: #1e6fd910;
+    color: var(--white);
+    transform: translateY(-1px);
+  }
+
+  .suggest-btn:hover::before { opacity: 1; }
+
+  .suggest-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--blue2);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+
+  /* ── MESSAGES ── */
+  .messages {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .msg-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    opacity: 0;
+    animation: fadeUp 0.4s forwards;
+  }
+
+  .msg-row.user { flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .msg-avatar.ai {
+    background: linear-gradient(135deg, #1e6fd9, #0d3d7a);
+    border: 1px solid #2a5faf;
+    box-shadow: 0 0 16px #1e6fd930;
+  }
+
+  .msg-avatar.human {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+  }
+
+  .msg-bubble {
+    max-width: 76%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .msg-bubble.ai {
+    background: var(--panel);
+    border: 1px solid var(--border2);
+    border-radius: 4px 12px 12px 12px;
+    color: var(--text);
+  }
+
+  .msg-bubble.human {
+    background: #1e3d66;
+    border: 1px solid #2a5080;
+    border-radius: 12px 4px 12px 12px;
+    color: var(--white);
+  }
+
+  .msg-bubble strong { color: var(--white); }
+
+  .msg-bubble .section-head {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue2);
+    display: block;
+    margin: 10px 0 4px;
+  }
+
+  .msg-bubble ul { padding-left: 0; list-style: none; }
+  .msg-bubble ul li { padding-left: 14px; position: relative; margin-top: 3px; }
+  .msg-bubble ul li::before { content: '›'; position: absolute; left: 0; color: var(--blue2); }
+
+  /* Loading dots */
+  .loading-bubble {
+    background: var(--panel);
+    border: 1px solid var(--border2);
+    border-radius: 4px 12px 12px 12px;
+    padding: 16px 20px;
+    display: flex; gap: 5px; align-items: center;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--blue);
+    animation: pulse 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.7); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── INPUT BAR (sticky bottom) ── */
+  .input-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 100;
+    background: linear-gradient(0deg, #06111f 70%, transparent);
+    padding: 16px 32px 24px;
+  }
+
+  .input-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 10px 12px 10px 16px;
+    box-shadow: 0 0 40px #06111f80, 0 0 0 1px #1e6fd920;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .input-inner:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 40px #06111f, 0 0 0 1px #1e6fd940, 0 0 20px #1e6fd920;
+  }
+
+  textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.975rem;
+    line-height: 1.5;
+    resize: none;
+    max-height: 140px;
+    padding: 4px 0;
+  }
+
+  textarea::placeholder { color: var(--dim); }
+
+  .send-btn {
+    background: var(--blue);
+    border: none;
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover { background: var(--blue2); transform: scale(1.05); }
+  .send-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  .input-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+    text-align: center;
+    margin-top: 8px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    header { padding: 0 16px; }
+    .hero { padding: 40px 16px 24px; }
+    .coverage { padding: 0 16px 24px; }
+    .main { padding: 0 16px 120px; }
+    .suggestions-grid { grid-template-columns: 1fr; }
+    .input-bar { padding: 12px 16px 20px; }
+    .msg-bubble { max-width: 88%; }
+  }
+
+  .section-divider {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--dim);
+    letter-spacing: 0.12em;
+    margin: 4px 0;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border2);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-mark">
+    <div class="badge">⚖</div>
+    <div class="logo-text">BLUE<span>LINE</span></div>
+  </div>
+  <nav>
+    <div class="nav-tag">UK LAW · POWERS · PROCEDURE</div>
+    <div class="status-dot" style="margin-left:16px">LIVE</div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">// UK Police Knowledge Assistant</div>
+  <h1>Know Your<br><em>Powers & Law</em></h1>
+  <p class="hero-sub">Ask about police powers, legislation, scenarios and procedures. Instant, accurate guidance based on UK law.</p>
+  <div class="disclaimer-pill">⚠ FOR TRAINING & REFERENCE ONLY — Always verify with current force policy</div>
+</div>
+
+<!-- COVERAGE CHIPS -->
+<div class="coverage" id="chips">
+  <div class="chip">PACE 1984</div>
+  <div class="chip">Public Order Act</div>
+  <div class="chip">Road Traffic Act</div>
+  <div class="chip">Misuse of Drugs</div>
+  <div class="chip">Theft Act</div>
+  <div class="chip">OAPA 1861</div>
+  <div class="chip">Sexual Offences Act</div>
+  <div class="chip">Domestic Abuse Act</div>
+  <div class="chip">Mental Health Act</div>
+  <div class="chip">Children Act</div>
+  <div class="chip">Use of Force</div>
+  <div class="chip">Human Rights Act</div>
+  <div class="chip">Bail Act</div>
+  <div class="chip">CPIA Disclosure</div>
+  <div class="chip">PEACE Interview</div>
+  <div class="chip">Cautions & CJPOA</div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main">
+
+  <!-- Suggestions -->
+  <div id="suggestions">
+    <div class="section-divider">QUICK START</div>
+    <div class="suggestions-grid" id="suggestGrid"></div>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages" id="messages"></div>
+
+</div>
+
+<!-- INPUT BAR -->
+<div class="input-bar">
+  <div class="input-inner">
+    <textarea id="input" rows="1" placeholder="Ask about police powers, legislation, or a scenario…"></textarea>
+    <button class="send-btn" id="sendBtn" title="Send">➤</button>
+  </div>
+  <div class="input-hint">ENTER TO SEND &nbsp;·&nbsp; SHIFT+ENTER FOR NEW LINE</div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are an expert UK Police Knowledge Assistant. You have comprehensive, up-to-date knowledge of UK policing law, legislation, powers, and procedures. You assist police officers, student officers, and those studying UK law enforcement.
+
+Your knowledge covers:
+
+PACE 1984 (Police and Criminal Evidence Act):
+- S1: Stop and search (reasonable grounds, suspicion, articles)
+- S17: Powers of entry (arrest, saving life, preventing serious damage)
+- S18: Search of premises after arrest
+- S19: Seizure of items found on premises
+- S24: Arrest without warrant (indictable offences, necessity test)
+- S24A: Citizen's arrest
+- S25-30: Arrest procedure, caution, informing of arrest
+- S32: Search of person on arrest
+- S34-46: Detention: custody clock, reviews, limits (24hrs, 36hrs, 96hrs)
+- S56: Right to have someone informed of arrest
+- S58: Right to legal advice
+- S76/78: Admissibility of confessions/evidence
+- PACE Codes of Practice A-H
+
+Public Order Act 1986: S1 Riot, S2 Violent Disorder, S3 Affray, S4/4A/5 harassment/alarm/distress. S11-14 processions. S60 stop and search without suspicion.
+
+Public Order Act 2023: protest powers, locking-on offences, serious disruption.
+
+Criminal Justice and Public Order Act 1994: S60 stop and search, trespassers, aggravated trespass. Right to silence and adverse inferences.
+
+Misuse of Drugs Act 1971: S5 possession, S5(3) PWITS, S4 supply/production, S23 search powers. Class A (heroin, cocaine, MDMA), Class B (cannabis, amphetamines, ketamine), Class C (anabolic steroids, benzos).
+
+Road Traffic Act 1988: S4 driving unfit, S5 over prescribed limit, S6 preliminary tests, S163 power to stop, S172 duty to give driver info, S1 death by dangerous, S2 dangerous driving, S3 careless driving.
+
+Theft Act 1968: S1 theft, S8 robbery, S9 burglary (S9(1)(a) entry with intent, S9(1)(b) having entered), S10 aggravated burglary, S12 TWOC.
+
+Fraud Act 2006: S1-4 fraud offences, S6-7 possession/making articles for fraud.
+
+Offences Against the Person Act 1861: S18 GBH with intent, S20 unlawful wounding/GBH, S47 ABH, common assault and battery.
+
+Sexual Offences Act 2003: S1 rape, S3 sexual assault, S9-12 child sexual offences, consent provisions.
+
+Domestic Abuse: Domestic Abuse Act 2021, Clare's Law, S76 Serious Crime Act 2015 coercive control, DVPO powers, DASH risk assessment.
+
+Mental Health Act 1983: S136 police power to remove to place of safety. S135 warrant.
+
+Children Act 1989: S46 police protection (72 hours), S17 children in need, S47 risk enquiries.
+
+Firearms Act 1968: S1 possession without cert, S5 prohibited weapons, S16-18 firearms offences.
+
+Use of Force: Criminal Law Act 1967 S3, common law self-defence, necessity/proportionality/reasonableness, College of Policing force guidance, Human Rights Act (Articles 2, 3, 5, 8).
+
+Cautions & Interviews: Standard caution wording, when to caution, significant statements, PEACE model (Preparation, Engage & Explain, Account, Closure, Evaluation), vulnerable persons, appropriate adults.
+
+Bail: Bail Act 1976, police bail pre/post charge, bail conditions, S6 failure to appear.
+
+Disclosure: CPIA 1996, unused material, sensitive material.
+
+When answering:
+- Be precise about legislation sections and powers
+- Always mention necessity tests, conditions, or safeguards that apply
+- Give practical, actionable advice
+- Highlight HRA compliance, evidence admissibility risks
+- Mention documentation required (use of force forms, BWV, etc.)
+- Format clearly with headings and bullet points
+- Walk through scenarios step-by-step
+- Never invent legislation or powers
+- Recommend seeking specific legal advice for complex matters`;
+
+const SUGGESTIONS = [
+  { label: "STOP & SEARCH", text: "What are my powers to stop and search under PACE S1?" },
+  { label: "ARREST", text: "When can I arrest someone without a warrant? What is the necessity test?" },
+  { label: "DETENTION", text: "What are the custody time limits and detention clock rules?" },
+  { label: "ENTRY POWERS", text: "What powers do I have to enter premises under S17 PACE?" },
+  { label: "DOMESTIC", text: "How do I deal with a domestic incident — what powers do I have?" },
+  { label: "CAUTION", text: "What is the correct caution to give on arrest and when must I give it?" },
+  { label: "DRUGS", text: "What are the drug classifications and relevant offences under the MDA?" },
+  { label: "MENTAL HEALTH", text: "When and how can I use Section 136 Mental Health Act?" },
+];
+
+let history = [];
+let isLoading = false;
+
+// Build suggestions
+const grid = document.getElementById('suggestGrid');
+SUGGESTIONS.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'suggest-btn';
+  btn.innerHTML = `<span class="suggest-label">${s.label}</span>${s.text}`;
+  btn.onclick = () => sendMessage(s.text);
+  grid.appendChild(btn);
+});
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('sendBtn');
+
+input.addEventListener('input', () => autoResize(input));
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+sendBtn.onclick = () => sendMessage();
+
+function renderMarkdown(text) {
+  const lines = text.split('\n');
+  let html = '';
+  let inList = false;
+
+  for (let line of lines) {
+    // Bold headers like **TEXT**
+    if (/^\*\*[^*]+\*\*$/.test(line.trim())) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<span class="section-head">${line.replace(/\*\*/g, '')}</span>`;
+      continue;
+    }
+    // H2/H3
+    if (line.startsWith('## ') || line.startsWith('### ')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<span class="section-head">${line.replace(/^#{2,3} /, '')}</span>`;
+      continue;
+    }
+    // Bullet
+    if (line.startsWith('- ') || line.startsWith('• ')) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      const content = line.slice(2).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      html += `<li>${content}</li>`;
+      continue;
+    }
+    if (inList) { html += '</ul>'; inList = false; }
+    if (line.trim() === '') { html += '<br>'; continue; }
+    html += `<p style="margin-top:4px">${line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`;
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function addMessage(role, content) {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = `msg-row ${role === 'user' ? 'user' : ''}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = `msg-avatar ${role === 'user' ? 'human' : 'ai'}`;
+  avatar.textContent = role === 'user' ? '👤' : '⚖️';
+
+  const bubble = document.createElement('div');
+  bubble.className = `msg-bubble ${role === 'user' ? 'human' : 'ai'}`;
+
+  if (role === 'user') {
+    bubble.textContent = content;
+  } else {
+    bubble.innerHTML = renderMarkdown(content);
+  }
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  msgs.appendChild(row);
+  row.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return row;
+}
+
+function addLoading() {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+  row.id = 'loadingRow';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar ai';
+  avatar.textContent = '⚖️';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'loading-bubble';
+  bubble.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  msgs.appendChild(row);
+  row.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function removeLoading() {
+  const el = document.getElementById('loadingRow');
+  if (el) el.remove();
+}
+
+async function sendMessage(text) {
+  const userText = text || input.value.trim();
+  if (!userText || isLoading) return;
+
+  // Hide suggestions
+  document.getElementById('suggestions').style.display = 'none';
+
+  input.value = '';
+  autoResize(input);
+  isLoading = true;
+  sendBtn.disabled = true;
+
+  history.push({ role: 'user', content: userText });
+  addMessage('user', userText);
+  addLoading();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: history,
+      })
+    });
+
+    const data = await res.json();
+    const reply = (data.content || []).map(b => b.text || '').join('') || 'No response received.';
+    history.push({ role: 'assistant', content: reply });
+    removeLoading();
+    addMessage('assistant', reply);
+  } catch (err) {
+    removeLoading();
+    history.push({ role: 'assistant', content: '⚠️ Connection error. Please try again.' });
+    addMessage('assistant', '⚠️ Connection error. Please try again.');
+  }
+
+  isLoading = false;
+  sendBtn.disabled = false;
+  input.focus();
+}
+</script>
+</body>
+</html>
